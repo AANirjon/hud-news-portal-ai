@@ -8,7 +8,7 @@ import { FiUserPlus } from "react-icons/fi";
 import { FcGoogle } from "react-icons/fc";
 
 export default function Register() {
-//   const [name, setName] = useState("");
+  //   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
@@ -16,8 +16,10 @@ export default function Register() {
 
   const handleEmailRegister = async (e) => {
     e.preventDefault();
+    // console.log("Email:", email);     
+    // console.log("Password:", password); 
     try {
-      await createUserWithEmailAndPassword(auth, name, email, password);
+      await createUserWithEmailAndPassword(auth, email, password);
       navigate("/");
     } catch (err) {
       setError(err.message);
