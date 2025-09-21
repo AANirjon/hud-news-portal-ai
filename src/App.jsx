@@ -15,6 +15,7 @@ import { ScrollSpeedProvider } from "./pages/ScrollSpeedContext";
 import { ThemeProvider, ThemeContext } from "./pages/ThemeContext";
 import { BookmarkProvider } from "./pages/BookmarkContext";
 import { AuthProvider } from "./AuthContext";
+import HUD3DLoader from "./components/HUD3DLoader";
 
 function App() {
   return (
@@ -128,7 +129,7 @@ function AuthWrapper({ children }) {
   if (loading) {
     return (
       <div className="h-screen flex items-center justify-center text-green-400">
-        Loading...
+        <HUD3DLoader></HUD3DLoader>
       </div>
     );
   }

@@ -3,6 +3,7 @@ import gsap from "gsap";
 import { FaBookmark } from "react-icons/fa";
 import axios from "axios";
 import { useAuth } from "../AuthContext";
+import HUD3DLoader from "../components/HUD3DLoader";
 
 const Bookmarks = () => {
   const listRef = useRef(null);
@@ -57,8 +58,8 @@ const Bookmarks = () => {
 
   if (loading) {
     return (
-      <div className="h-[70vh] flex items-center justify-center text-green-400">
-        Loading Bookmarks...
+      <div>
+        <HUD3DLoader></HUD3DLoader>
       </div>
     );
   }

@@ -5,6 +5,7 @@ import { BookmarkContext } from "./BookmarkContext";
 import { FaRegBookmark, FaBookmark } from "react-icons/fa";
 import axios from "axios";
 import { useAuth } from "../AuthContext";
+import HUD3DLoader from "../components/HUD3DLoader";
 
 const HUDNewsFeed = () => {
   const feedRef = useRef(null);
@@ -71,8 +72,8 @@ const HUDNewsFeed = () => {
 
   if (loading) {
     return (
-      <div className="h-[70vh] flex items-center justify-center text-green-400">
-        Loading News...
+      <div>
+        <HUD3DLoader></HUD3DLoader>
       </div>
     );
   }
