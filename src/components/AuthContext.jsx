@@ -1,8 +1,8 @@
-// App.js
+// src/App.js
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate, useLocation } from "react-router-dom";
-import { useContext, useState, useEffect } from "react";
+import { useContext } from "react";
+import { signOut } from "firebase/auth";
 import { auth } from "./firebase/firebaseConfig";
-import { signOut, onAuthStateChanged } from "firebase/auth";
 
 import HUDNewsFeed from "./pages/HUDNewsFeed";
 import Bookmarks from "./pages/Bookmarks";
@@ -14,12 +14,12 @@ import Register from "./pages/Register";
 import { ScrollSpeedProvider } from "./pages/ScrollSpeedContext";
 import { ThemeProvider, ThemeContext } from "./pages/ThemeContext";
 import { BookmarkProvider } from "./pages/BookmarkContext";
-import { AuthProvider } from "./AuthContext";
+import { AuthProvider, useAuth } from "./context/AuthContext";
 
 function App() {
   return (
-    <ThemeProvider>
-      <AuthProvider>
+    <AuthProvider>
+      <ThemeProvider>
         <ScrollSpeedProvider>
           <BookmarkProvider>
             <Router>
@@ -27,24 +27,16 @@ function App() {
             </Router>
           </BookmarkProvider>
         </ScrollSpeedProvider>
-      </AuthProvider>
-    </ThemeProvider>
+      </ThemeProvider>
+    </AuthProvider>
   );
 }
 
 // Navbar with conditional login/logout
 function Navbar() {
   const { theme } = useContext(ThemeContext);
+  const { user } = useAuth();
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
-
-  // Track Firebase auth state
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-    });
-    return () => unsubscribe();
-  }, []);
 
   const handleLogout = async () => {
     await signOut(auth);
@@ -54,7 +46,6 @@ function Navbar() {
   return (
     <nav className="fixed top-0 left-0 w-full bg-black bg-opacity-70 backdrop-blur-lg border-b border-[var(--hud-border)] z-50">
       <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-        {/* App Title + Glowing Theme Indicator */}
         <div className="flex items-center gap-3">
           <h1 className="text-sm md:text-2xl font-bold tracking-widest text-[var(--hud-primary)]">
             AAN<span className="text-gray-500">Feed</span>
@@ -66,22 +57,13 @@ function Navbar() {
           ></div>
         </div>
 
-        {/* Conditional Navigation Links */}
         <div className="flex items-center space-x-6 text-sm md:text-lg">
           {user ? (
             <>
-              <Link to="/" className="hover:text-green-100 transition duration-200">
-                Home
-              </Link>
-              <Link to="/news" className="hover:text-green-100 transition duration-200">
-                News
-              </Link>
-              <Link to="/bookmarks" className="hover:text-green-100 transition duration-200">
-                Bookmarks
-              </Link>
-              <Link to="/settings" className="hover:text-green-100 transition duration-200">
-                Settings
-              </Link>
+              <Link to="/" className="hover:text-green-100 transition duration-200">Home</Link>
+              <Link to="/news" className="hover:text-green-100 transition duration-200">News</Link>
+              <Link to="/bookmarks" className="hover:text-green-100 transition duration-200">Bookmarks</Link>
+              <Link to="/settings" className="hover:text-green-100 transition duration-200">Settings</Link>
               <button
                 onClick={handleLogout}
                 className="px-3 py-1 border border-red-500 text-red-400 rounded hover:bg-red-500 hover:text-black transition"
@@ -91,18 +73,8 @@ function Navbar() {
             </>
           ) : (
             <>
-              <Link
-                to="/login"
-                className="px-3 py-1 border border-green-500 text-green-400 rounded hover:bg-green-500 hover:text-black transition"
-              >
-                Login
-              </Link>
-              <Link
-                to="/register"
-                className="px-3 py-1 border border-blue-500 text-blue-400 rounded hover:bg-blue-500 hover:text-black transition"
-              >
-                Register
-              </Link>
+              <Link to="/login" className="px-3 py-1 border border-green-500 text-green-400 rounded hover:bg-green-500 hover:text-black transition">Login</Link>
+              <Link to="/register" className="px-3 py-1 border border-blue-500 text-blue-400 rounded hover:bg-blue-500 hover:text-black transition">Register</Link>
             </>
           )}
         </div>
@@ -111,19 +83,9 @@ function Navbar() {
   );
 }
 
-// Protected route wrapper with proper auth state handling
+// AuthWrapper using AuthContext
 function AuthWrapper({ children }) {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
-  }, []);
+  const { user, loading } = useAuth();
 
   if (loading) {
     return (
@@ -134,7 +96,7 @@ function AuthWrapper({ children }) {
   }
 
   if (!user) {
-    window.location.href = "/login"; // redirect if not logged in
+    window.location.href = "/login";
     return null;
   }
 
@@ -143,8 +105,6 @@ function AuthWrapper({ children }) {
 
 function AppContent() {
   const location = useLocation();
-
-  // Hide navbar on login/register pages
   const hideNavbar = ["/login", "/register"].includes(location.pathname);
 
   return (
