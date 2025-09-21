@@ -24,7 +24,7 @@ const HUDNewsFeed = () => {
       if (!user || !token) return;
 
       try {
-        const response = await axios.get("http://localhost:5000/news", {
+        const response = await axios.get("https://news-portal-server-seven-bice.vercel.app/news", {
           headers: { Authorization: `Bearer ${token}` },
           params: { email: user.email },
         });

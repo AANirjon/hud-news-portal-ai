@@ -15,7 +15,7 @@ const Bookmarks = () => {
       if (!user || !token) return;
 
       try {
-        const response = await axios.get("http://localhost:5000/bookmarks", {
+        const response = await axios.get("https://news-portal-server-seven-bice.vercel.app/bookmarks", {
           headers: { Authorization: `Bearer ${token}` },
           params: { email: user.email },
         });
@@ -42,9 +42,9 @@ const Bookmarks = () => {
 
   // ---------------- Remove bookmark ----------------
   const handleRemove = async (bm) => {
-    
+
     try {
-      await axios.delete(`http://localhost:5000/bookmarks/${bm._id}`, {
+      await axios.delete(`https://news-portal-server-seven-bice.vercel.app/bookmarks/${bm._id}`, {
         headers: { Authorization: `Bearer ${token}` },
         data: { email: user.email, id: bm.id },
       });

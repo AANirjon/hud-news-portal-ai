@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "http://localhost:5000"; // replace with your backend URL
+const BASE_URL = "https://news-portal-server-seven-bice.vercel.app"; // replace with your backend URL
 
 export const getNews = async (token, email) => {
   try {

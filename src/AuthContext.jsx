@@ -23,7 +23,7 @@ export const AuthProvider = ({ children }) => {
       if (currentUser) {
         try {
           // Get JWT from backend
-          const res = await axios.post("http://localhost:5000/jwt", {
+          const res = await axios.post("https://news-portal-server-seven-bice.vercel.app/jwt", {
             email: currentUser.email,
             uid: currentUser.uid,
           });

@@ -14,7 +14,7 @@ export const BookmarkProvider = ({ children }) => {
       if (!user || !token) return;
 
       try {
-        const response = await axios.get("http://localhost:5000/bookmarks", {
+        const response = await axios.get("https://news-portal-server-seven-bice.vercel.app/bookmarks", {
           headers: { Authorization: `Bearer ${token}` },
           params: { email: user.email },
         });
@@ -37,7 +37,7 @@ export const BookmarkProvider = ({ children }) => {
     if (exists) {
       // Remove from backend
       try {
-        await axios.delete("http://localhost:5000/bookmarks", {
+        await axios.delete("https://news-portal-server-seven-bice.vercel.app/bookmarks", {
           headers: { Authorization: `Bearer ${token}` },
           data: { email: user.email, id: item.id }, // send in body
         });
@@ -50,7 +50,7 @@ export const BookmarkProvider = ({ children }) => {
       // Add to backend
       try {
         const response = await axios.post(
-          "http://localhost:5000/bookmarks",
+          "https://news-portal-server-seven-bice.vercel.app/bookmarks",
           { ...item, email: user.email },
           { headers: { Authorization: `Bearer ${token}` } }
         );
