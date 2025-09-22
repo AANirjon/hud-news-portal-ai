@@ -24,18 +24,20 @@ const HUD3DLoader = () => {
         
         {/* Rotating HUD Rings */}
         <Ring radius={1} color="#00ff99" speed={2} />
-        <Ring radius={1.5} color="#39ff14" speed={3} />
+        <Ring radius={1.5} color="#39ff14" speed={1} />
         <Ring radius={2} color="#00ff99" speed={4} />
+        <Ring radius={2.5} color="#00ff99" speed={3} />
+        <Ring radius={2.8} color="#00ff99" speed={6} />
         
         {/* Optional HUD Dots */}
-        {[...Array(8)].map((_, i) => (
+        {[...Array(10)].map((_, i) => (
           <motion.mesh
             key={i}
             position={[Math.cos((i / 8) * Math.PI * 2) * 2, Math.sin((i / 8) * Math.PI * 2) * 2, 0]}
             animate={{ scale: [0.2, 0.5, 0.2] }}
             transition={{ repeat: Infinity, duration: 1, delay: i * 0.1 }}
           >
-            <sphereGeometry args={[0.05, 16, 16]} />
+            <sphereGeometry args={[0.05, 16, 16 ]} />
             <meshStandardMaterial color="#00ff99" emissive="#00ff99" />
           </motion.mesh>
         ))}

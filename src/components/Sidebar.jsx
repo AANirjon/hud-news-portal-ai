@@ -1,63 +1,72 @@
 import { FaHome, FaBookmark, FaCog, FaNewspaper, FaBars, FaArrowLeft } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
+import PreferencesSearch from "./PreferencesSearch";
 
 const Sidebar = ({ isOpen, toggleSidebar, isMobile }) => {
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <motion.aside
-          key="sidebar"
-          initial={{ x: isMobile ? -250 : 0, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          exit={{ x: isMobile ? -250 : 0, opacity: 0 }}
-          transition={{ duration: 0.4 }}
-          className={`fixed top-16 md:top-18 left-0 h-[calc(100%-4rem)] md:h-[calc(100%-4rem)] flex flex-col items-start p-5 space-y-6 z-50 w-52
-            bg-black
-            border-r-4 border-cyan-400 shadow-[0_0_10px_cyan,0_0_20px_cyan]
-          `}
-        >
-          {/* Sidebar Header */}
-          <h2 className="text-cyan-400 font-bold text-xl mb-5 tracking-widest">
-            HUD Menu
-          </h2>
+    <>
+      <AnimatePresence>
+        {isOpen && isMobile && (
+          <motion.div
+            key="overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.6 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 bg-black z-40"
+            onClick={toggleSidebar}
+          />
+        )}
 
-          {/* Navigation */}
-          <nav className="flex flex-col gap-5 w-full">
-            <a href="#" className="flex items-center gap-3 text-cyan-300 hover:text-cyan-100 hover:scale-105 transition-all">
-              <FaHome /> Home
-            </a>
-            <a href="#" className="flex items-center gap-3 text-cyan-300 hover:text-cyan-100 hover:scale-105 transition-all">
-              <FaNewspaper /> News
-            </a>
-            <a href="#" className="flex items-center gap-3 text-cyan-300 hover:text-cyan-100 hover:scale-105 transition-all">
-              <FaBookmark /> Bookmarks
-            </a>
-            <a href="#" className="flex items-center gap-3 text-cyan-300 hover:text-cyan-100 hover:scale-105 transition-all">
-              <FaCog /> Settings
-            </a>
-            <p>Prefarance section will be there</p>
-          </nav>
+        {/* Sidebar */}
+        {isOpen && (
+          <motion.aside
+            key="sidebar"
+            initial={{ x: isMobile ? -300 : 0, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: isMobile ? -300 : 0, opacity: 0 }}
+            transition={{ duration: 0.4 }}
+            className={`
+              fixed top-16 md:top-16 left-0 h-[calc(100%-4rem)]
+              flex flex-col items-start p-5 space-y-6 z-50 w-80 md:w-70
+              bg-black border-r-4 border-cyan-400 shadow-[0_0_10px_cyan,0_0_20px_cyan]
+            `}
+          >
+            {/* Sidebar Header */}
+            <h2 className="text-cyan-400 font-bold text-xl mb-5 tracking-widest">
+              Add Preferances
+            </h2>
 
-          {/* Toggle Button inside sidebar */}
+            {/* Navigation */}
+            <nav className="flex flex-col gap-5 w-full">
+              
+
+              <div className="mt-6 w-full">
+                <PreferencesSearch />
+              </div>
+            </nav>
+
+            {/* Toggle Button inside sidebar */}
+            <button
+              onClick={toggleSidebar}
+              className="absolute -right-4 top-5 z-50 bg-black text-cyan-400 p-2 rounded-full shadow-lg hover:bg-cyan-900 transition-all flex items-center justify-center"
+            >
+              <FaArrowLeft />
+            </button>
+          </motion.aside>
+        )}
+
+        {/* Show toggle button when sidebar is closed */}
+        {!isOpen && (
           <button
             onClick={toggleSidebar}
-            className="absolute right-[-12px] top-5 z-50 bg-black text-cyan-400 p-2 rounded-full shadow-lg hover:bg-cyan-900 transition-all flex items-center justify-center"
+            className="fixed top-16 left-4 z-50 md:left-2 bg-black text-cyan-400 p-2 rounded-full shadow-lg hover:bg-cyan-900 transition-all flex items-center justify-center"
           >
-            {isOpen ? <FaArrowLeft /> : <FaBars />}
+            <FaBars />
           </button>
-        </motion.aside>
-      )}
-
-      {/* Show toggle button when sidebar is closed */}
-      {!isOpen && (
-        <button
-          onClick={toggleSidebar}
-          className="fixed top-16 left-2 z-50 bg-black text-cyan-400 p-2 rounded-full shadow-lg hover:bg-cyan-900 transition-all flex items-center justify-center"
-        >
-          <FaBars />
-        </button>
-      )}
-    </AnimatePresence>
+        )}
+      </AnimatePresence>
+    </>
   );
 };
 

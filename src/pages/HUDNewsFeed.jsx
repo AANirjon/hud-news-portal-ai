@@ -5,7 +5,8 @@ import { BookmarkContext } from "./BookmarkContext";
 import { FaRegBookmark, FaBookmark } from "react-icons/fa";
 import axios from "axios";
 import { useAuth } from "../AuthContext";
-import HUD3DLoader from "../components/HUD3DLoader";
+// import HUD3DLoader from "../components/HUD3DLoader";
+import HUD3DAniLod from "../components/HUD3DAinLod";
 
 const HUDNewsFeed = () => {
   const feedRef = useRef(null);
@@ -73,7 +74,7 @@ const HUDNewsFeed = () => {
   if (loading) {
     return (
       <div>
-        <HUD3DLoader></HUD3DLoader>
+        <HUD3DAniLod></HUD3DAniLod>
       </div>
     );
   }
@@ -84,7 +85,7 @@ const HUDNewsFeed = () => {
         Live News Feed
       </h2>
       <div className="relative h-[70vh] overflow-hidden text-[var(--hud-text)]">
-        {/* Render newsFeed twice for seamless scroll */}
+        {/* Render newsFeed twice for seamless scroll*/}
         <div ref={feedRef} className="flex flex-col space-y-6 absolute w-full">
           {[...newsFeed, ...newsFeed].map((news, index) => {
             const isBookmarked = bookmarks.some((b) => b.id === news.id);
@@ -98,7 +99,7 @@ const HUDNewsFeed = () => {
             return (
               <div
                 key={`${news.id}-${index}`}
-                className="p-4 border border-cyan rounded-xl backdrop-blur-md transition-transform hover:shadow-[0_0_20px_var(--hud-primary)] flex justify-between items-start"
+                className="p-4 border border-cyan-400 rounded-xl backdrop-blur-md transition-transform hover:shadow-[0_0_20px_var(--hud-primary)] flex justify-between items-start"
               >
                 {/* Left section */}
                 <div className="flex flex-col justify-start">

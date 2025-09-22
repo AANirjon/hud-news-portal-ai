@@ -52,36 +52,36 @@ const Home = () => {
   }, []);
 
   return (
-    <div ref={containerRef} className="flex min-h-screen bg-black text-white relative">
+    <div ref={containerRef} className="flex flex-col md:flex-row min-h-screen bg-black text-white relative">
       {/* Sidebar */}
-      <div className="pt-10">
-        <Sidebar
-          isOpen={isSidebarOpen}
-          toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
-          isMobile={isMobile}
-        />
-      </div>
+      <Sidebar
+        isOpen={isSidebarOpen}
+        toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
+        isMobile={isMobile}
+      />
+
       {/* Main Content */}
       <div
-        className={`flex-1 p-6 transition-all duration-500 ${!isMobile ? (isSidebarOpen ? "ml-52" : "ml-0") : ""
-          }`}
+        className={`flex-1 relative transition-all duration-500 p-4 md:p-6 lg:p-8
+          ${!isMobile ? (isSidebarOpen ? "ml-[16%]" : "ml-0") : "ml-0"}`
+        }
       >
         {/* Moving HUD grid background */}
         <div
           ref={gridRef}
-          className="absolute inset-0 bg-[linear-gradient(90deg,var(--hud-grid)_2px,transparent_1px),linear-gradient(var(--hud-grid)_2px,transparent_1px)] bg-[length:40px_40px] opacity-40 animate-pulse"
+          className="absolute inset-0 w-full h-full bg-[linear-gradient(90deg,var(--hud-grid)_2px,transparent_1px),linear-gradient(var(--hud-grid)_2px,transparent_1px)] bg-[length:10%_10%] opacity-40 animate-pulse"
         ></div>
 
         {/* Glow layer */}
         <div
           ref={glowRef}
-          className="absolute inset-0 bg-[var(--hud-primary)] mix-blend-overlay blur-3xl opacity-20"
+          className="absolute inset-0 w-full h-full bg-[var(--hud-primary)] mix-blend-overlay blur-3xl opacity-20"
         ></div>
 
-        <div className="relative flex flex-col items-center text-center">
+        <div className="relative flex flex-col items-center text-center w-full max-w-[95%] mx-auto">
           <h1
             ref={titleRef}
-            className="relative text-3xl md:text-6xl font-extrabold text-green-400 tracking-widest drop-shadow-[0_0_10px_#22c55e]"
+            className="relative text-[6vw] sm:text-[5vw] md:text-[3.5vw] lg:text-[2.5vw] font-extrabold text-green-400 tracking-widest drop-shadow-[0_0_10px_#22c55e]"
           >
             AI <span className="text-yellow-500">News</span>{" "}
             <span className="text-[var(--hud-primary)]">Feed</span>
@@ -89,13 +89,13 @@ const Home = () => {
 
           <p
             ref={subtitleRef}
-            className="overflow-hidden whitespace-nowrap text-sm md:text-xl text-green-100 border-r-2 mb-5"
+            className="overflow-hidden whitespace-nowrap text-[3vw] sm:text-[2.5vw] md:text-[1.5vw] lg:text-[1vw] text-green-100 border-r-2 mb-5 mt-2"
           >
             The future of personalized news delivery, right in your HUD.
           </p>
         </div>
 
-        <div className="w-full md:w-[95%] p-5 mx-auto border rounded-xl">
+        <div className="w-[95%] md:w-[90%] lg:w-[85%] p-4 md:p-6 mx-auto border border-cyan-400 rounded-xl">
           <HUDNewsFeed />
         </div>
       </div>
