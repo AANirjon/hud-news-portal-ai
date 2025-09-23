@@ -1,4 +1,4 @@
-// src/lib/bookmarks.js
+
 const STORAGE_KEY = "hud_bookmarks_v1";
 
 export function loadBookmarks() {

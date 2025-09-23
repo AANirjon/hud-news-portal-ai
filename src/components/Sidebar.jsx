@@ -1,4 +1,4 @@
-import { FaHome, FaBookmark, FaCog, FaNewspaper, FaBars, FaArrowLeft } from "react-icons/fa";
+import {  FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import PreferencesSearch from "./PreferencesSearch";
 
@@ -27,7 +27,7 @@ const Sidebar = ({ isOpen, toggleSidebar, isMobile }) => {
             exit={{ x: isMobile ? -300 : 0, opacity: 0 }}
             transition={{ duration: 0.4 }}
             className={`
-              fixed top-16 md:top-16 left-0 h-[calc(100%-4rem)]
+              fixed top-[8.8%] md:top-[8.8%] left-0 h-[calc(100%-4rem)]
               flex flex-col items-start p-5 space-y-6 z-50 w-80 md:w-70
               bg-black border-r-4 border-cyan-400 shadow-[0_0_10px_cyan,0_0_20px_cyan]
             `}
@@ -38,13 +38,11 @@ const Sidebar = ({ isOpen, toggleSidebar, isMobile }) => {
             </h2>
 
             {/* Navigation */}
-            <nav className="flex flex-col gap-5 w-full">
-              
-
-              <div className="mt-6 w-full">
-                <PreferencesSearch />
-              </div>
-            </nav>
+            {/* <nav className="flex flex-col gap-5 w-full"> */}
+            {/* </nav> */}
+            <div className="mt-6 w-full">
+              <PreferencesSearch />
+            </div>
 
             {/* Toggle Button inside sidebar */}
             <button
@@ -60,9 +58,9 @@ const Sidebar = ({ isOpen, toggleSidebar, isMobile }) => {
         {!isOpen && (
           <button
             onClick={toggleSidebar}
-            className="fixed top-16 left-4 z-50 md:left-2 bg-black text-cyan-400 p-2 rounded-full shadow-lg hover:bg-cyan-900 transition-all flex items-center justify-center"
+            className="fixed top-[8.5%] left-4 z-50 md:left-2 bg-black text-cyan-400 p-2 rounded-full shadow-lg hover:bg-cyan-900 transition-all flex items-center justify-center"
           >
-            <FaBars />
+            <FaArrowRight />
           </button>
         )}
       </AnimatePresence>

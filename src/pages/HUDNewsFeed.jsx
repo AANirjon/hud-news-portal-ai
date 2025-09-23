@@ -5,8 +5,8 @@ import { BookmarkContext } from "./BookmarkContext";
 import { FaRegBookmark, FaBookmark } from "react-icons/fa";
 import axios from "axios";
 import { useAuth } from "../AuthContext";
-// import HUD3DLoader from "../components/HUD3DLoader";
 import HUD3DAniLod from "../components/HUD3DAinLod";
+import { usePreferences } from "../PreferencesContext";
 
 const HUDNewsFeed = () => {
   const feedRef = useRef(null);
@@ -14,16 +14,17 @@ const HUDNewsFeed = () => {
 
   const { scrollSpeed } = useContext(ScrollSpeedContext);
   const { bookmarks, toggleBookmark } = useContext(BookmarkContext);
-  const { user, token, loading } = useAuth();
+  const { user, token, loading: authLoading } = useAuth();
+  const { version } = usePreferences(); // triggers reload when preferences change
 
   const [newsFeed, setNewsFeed] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const speed = 800 / scrollSpeed;
-
-  // ---------------- Fetch news from backend ----------------
+  // ---------------- Fetch news ----------------
   useEffect(() => {
     const fetchNews = async () => {
       if (!user || !token) return;
+      setLoading(true);
 
       try {
         const response = await axios.get("https://news-portal-server-seven-bice.vercel.app/news", {
@@ -34,50 +35,63 @@ const HUDNewsFeed = () => {
         const formatted = response.data.map((item, index) => ({
           id: item._id || index,
           title: item.title || "No Title",
+          tags: item.tags,
           ...item,
         }));
 
         setNewsFeed(formatted);
       } catch (err) {
         console.error("Failed to fetch news:", err);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchNews();
-  }, [user, token]);
+  }, [user, token, version]); // reload when preferences change
 
   // ---------------- GSAP auto-scroll ----------------
   useEffect(() => {
     const feed = feedRef.current;
     if (!feed || newsFeed.length === 0) return;
 
-    // GSAP infinite scroll animation
+    // Always kill previous timeline
+    scrollTl.current?.kill();
+
+    // Duration based on scrollSpeed
+    const baseDuration = 4550;
+    const duration = baseDuration / scrollSpeed;
+
     scrollTl.current = gsap.to(feed, {
       y: "-50%",
-      duration: speed,
+      duration: duration,
       ease: "none",
       repeat: -1,
     });
 
-    feed.addEventListener("mouseenter", () => scrollTl.current.pause());
-    feed.addEventListener("mouseleave", () => scrollTl.current.resume());
+    const pauseScroll = () => scrollTl.current.pause();
+    const resumeScroll = () => scrollTl.current.resume();
 
-    return () => scrollTl.current?.kill();
-  }, [newsFeed]);
+    feed.addEventListener("mouseenter", pauseScroll);
+    feed.addEventListener("mouseleave", resumeScroll);
 
-  useEffect(() => {
-    if (scrollTl.current) {
-      scrollTl.current.duration(speed);
-    }
-  }, [speed]);
+    return () => {
+      scrollTl.current?.kill();
+      feed.removeEventListener("mouseenter", pauseScroll);
+      feed.removeEventListener("mouseleave", resumeScroll);
+    };
+  }, [newsFeed, scrollSpeed]);
 
-  if (loading) {
+  if (authLoading || loading) return <HUD3DAniLod />;
+
+  if (newsFeed.length === 0)
     return (
-      <div>
-        <HUD3DAniLod></HUD3DAniLod>
+      <div className="text-center text-[var(--hud-text)] mt-10">
+        <h2 className="text-xl font-bold text-[var(--hud-primary)]">
+          No news found for your preferences
+        </h2>
       </div>
     );
-  }
 
   return (
     <div>
@@ -85,33 +99,27 @@ const HUDNewsFeed = () => {
         Live News Feed
       </h2>
       <div className="relative h-[70vh] overflow-hidden text-[var(--hud-text)]">
-        {/* Render newsFeed twice for seamless scroll*/}
         <div ref={feedRef} className="flex flex-col space-y-6 absolute w-full">
           {[...newsFeed, ...newsFeed].map((news, index) => {
             const isBookmarked = bookmarks.some((b) => b.id === news.id);
-
-            const handleBookmark = () => {
-              console.log("Bookmark clicked:", news);
-              toggleBookmark(news);
-            };
-            let url = news.url;
+            const handleBookmark = () => toggleBookmark(news);
 
             return (
               <div
                 key={`${news.id}-${index}`}
-                className="p-4 border border-cyan-400 rounded-xl backdrop-blur-md transition-transform hover:shadow-[0_0_20px_var(--hud-primary)] flex justify-between items-start"
+                className="p-4 border-2 border-cyan-400 rounded-xl backdrop-blur-md transition-transform hover:shadow-[0_0_20px_var(--hud-primary)] flex justify-between items-center"
               >
-                {/* Left section */}
                 <div className="flex flex-col justify-start">
-                  <a href={url} target="_blank">
-                  <h3 className="text-xl font-semibold cursor-pointer hover:underline">{news.title}</h3>
-                  </a>                
+                  <a href={news.url} target="_blank" rel="noreferrer">
+                    <h3 className="text-xl font-semibold cursor-pointer hover:underline">
+                      {news.title}
+                    </h3>
+                  </a>
                   <h3 className="text-sm font-semibold mt-1 uppercase">
-                    Source: {news.source}  ||  Type: {news.tags[0]}
+                    Source: {news.source} || Tags: {news.tags?.join(", ") || "N/A"}
                   </h3>
                 </div>
 
-                {/* Right section: bookmark button */}
                 <button onClick={handleBookmark}>
                   <span className="text-2xl text-[var(--hud-primary)] hover:scale-110 transition-transform inline-block flex justify-center cursor-pointer">
                     {isBookmarked ? <FaBookmark /> : <FaRegBookmark />}

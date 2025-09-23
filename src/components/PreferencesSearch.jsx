@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useAuth } from "../AuthContext";
+import { usePreferences } from "../PreferencesContext";
 
 const PreferencesSearch = () => {
   const { user, token, loading } = useAuth();
-  const [topics, setTopics] = useState([]);
-  const [tags, setTags] = useState([]);
+  const { topics, tags, updatePreferences } = usePreferences();
   const [availableTopics] = useState([
     "AI",
     "Machine Learning",
@@ -28,8 +28,8 @@ const PreferencesSearch = () => {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
-        setTopics(res.data.topics || []);
-        setTags(res.data.tags || []);
+
+        updatePreferences(res.data.topics || [], res.data.tags || []);
       } catch (err) {
         console.error("Failed to load preferences:", err);
       }
@@ -37,7 +37,6 @@ const PreferencesSearch = () => {
     fetchPreferences();
   }, [user, token]);
 
-  // ---------------- Save Preferences ----------------
   const savePreferences = async (newTopics, newTags) => {
     if (!user || !token) return;
     setSaving(true);
@@ -47,52 +46,37 @@ const PreferencesSearch = () => {
         { email: user.email, topics: newTopics, tags: newTags },
         { headers: { Authorization: `Bearer ${token}` } }
       );
+      updatePreferences(newTopics, newTags); // updates context and triggers HUDNewsFeed reload
     } catch (err) {
       console.error("Failed to save preferences:", err);
     }
     setSaving(false);
   };
 
-  // ---------------- Toggle Topics ----------------
   const toggleTopic = (topic) => {
-    let updatedTopics;
-    if (topics.includes(topic)) {
-      updatedTopics = topics.filter((t) => t !== topic);
-    } else {
-      updatedTopics = [...topics, topic];
-    }
-    setTopics(updatedTopics);
+    const updatedTopics = topics.includes(topic)
+      ? topics.filter((t) => t !== topic)
+      : [...topics, topic];
     savePreferences(updatedTopics, tags);
   };
 
-  // ---------------- Add Tag ----------------
   const addSearchTag = () => {
-    if (searchTerm.trim() && !tags.includes(searchTerm.trim())) {
-      const updatedTags = [...tags, searchTerm.trim()];
-      setTags(updatedTags);
-      savePreferences(topics, updatedTags);
+    const trimmed = searchTerm.trim();
+    if (trimmed && !tags.includes(trimmed)) {
+      savePreferences(topics, [...tags, trimmed]);
       setSearchTerm("");
     }
   };
 
-  // ---------------- Delete (Update) ----------------
   const deleteItem = (type, item) => {
-    if (type === "topic") {
-      const updatedTopics = topics.filter((t) => t !== item);
-      setTopics(updatedTopics);
-      savePreferences(updatedTopics, tags);
-    } else {
-      const updatedTags = tags.filter((t) => t !== item);
-      setTags(updatedTags);
-      savePreferences(topics, updatedTags);
-    }
+    if (type === "topic") savePreferences(topics.filter((t) => t !== item), tags);
+    else savePreferences(topics, tags.filter((t) => t !== item));
   };
 
   if (loading) return <div className="text-green-400 text-sm">Loading...</div>;
 
   return (
     <div className="w-full flex flex-col space-y-4">
-      {/* Search + Add */}
       <div className="flex-col gap-2">
         <input
           type="text"
@@ -109,31 +93,25 @@ const PreferencesSearch = () => {
         </button>
       </div>
 
-      {/* Available Topics */}
       <div className="flex flex-wrap gap-2">
         {availableTopics.map((topic) => (
           <button
             key={topic}
             onClick={() => toggleTopic(topic)}
-            className={`px-2 py-1 text-xs md:text-sm rounded-full border transition ${
-              topics.includes(topic)
+            className={`px-2 py-1 text-xs md:text-sm rounded-full border transition ${topics.includes(topic)
                 ? "bg-cyan-400 border-cyan-300 text-black"
                 : "border-gray-500 text-gray-300 hover:bg-gray-800"
-            }`}
+              }`}
           >
             {topic}
           </button>
         ))}
       </div>
 
-      {/* Saving State */}
       {saving && (
-        <p className="text-xs text-yellow-400 font-medium">
-          Saving preferences...
-        </p>
+        <p className="text-xs text-yellow-400 font-medium">Saving preferences...</p>
       )}
 
-      {/* Selected Items */}
       <div className="max-h-40 md:max-h-60 overflow-y-auto mt-2 border-t border-gray-700 pt-2 space-y-2">
         {topics.length === 0 && tags.length === 0 && (
           <p className="text-gray-400 text-sm">No preferences selected.</p>
@@ -144,9 +122,7 @@ const PreferencesSearch = () => {
             key={topic}
             className="flex items-center justify-between bg-gray-800 px-2 py-1 rounded"
           >
-            <p className="text-xs md:text-sm text-cyan-400 font-semibold">
-              {topic}
-            </p>
+            <p className="text-xs md:text-sm text-cyan-400 font-semibold">{topic}</p>
             <button
               onClick={() => deleteItem("topic", topic)}
               className="text-red-400 hover:text-red-600 text-xs"
@@ -161,9 +137,7 @@ const PreferencesSearch = () => {
             key={tag}
             className="flex items-center justify-between bg-gray-800 px-2 py-1 rounded"
           >
-            <p className="text-xs md:text-sm text-yellow-400 font-semibold">
-              {tag}
-            </p>
+            <p className="text-xs md:text-sm text-yellow-400 font-semibold">{tag}</p>
             <button
               onClick={() => deleteItem("tag", tag)}
               className="text-red-400 hover:text-red-600 text-xs"

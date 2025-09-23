@@ -11,6 +11,12 @@ const Home = () => {
   const glowRef = useRef(null);
   const [isMobile, setIsMobile] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [preferencesVersion, setPreferencesVersion] = useState(0);
+
+  const handlePreferencesChange = () => {
+    // Increment version to trigger HUDNewsFeed refresh
+    setPreferencesVersion((v) => v + 1);
+  };
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -95,8 +101,8 @@ const Home = () => {
           </p>
         </div>
 
-        <div className="w-[95%] md:w-[90%] lg:w-[85%] p-4 md:p-6 mx-auto border border-cyan-400 rounded-xl">
-          <HUDNewsFeed />
+        <div className="w-[95%] md:w-[80%] lg:w-[80%] p-4 md:p-6 mx-auto border-2 border-cyan-400 rounded-xl">
+          <HUDNewsFeed preferencesVersion={preferencesVersion}/>
         </div>
       </div>
     </div>

@@ -13,22 +13,25 @@ import { ThemeProvider } from "./pages/ThemeContext";
 import { BookmarkProvider } from "./pages/BookmarkContext";
 import { AuthProvider } from "./AuthContext";
 
-import Navbar from "./components/Navbar";       
-import AuthWrapper from "./components/AuthWrapper"; 
+import Navbar from "./components/Navbar";
+import AuthWrapper from "./components/AuthWrapper";
+import { PreferencesProvider } from "./PreferencesContext";
 
 function App() {
   return (
-    <ThemeProvider>
-      <AuthProvider>
+    <AuthProvider>
+      <ThemeProvider>
         <ScrollSpeedProvider>
           <BookmarkProvider>
-            <Router>
-              <AppContent />
-            </Router>
+            <PreferencesProvider>
+              <Router>
+                <AppContent />
+              </Router>
+            </PreferencesProvider>
           </BookmarkProvider>
         </ScrollSpeedProvider>
-      </AuthProvider>
-    </ThemeProvider>
+      </ThemeProvider>
+    </AuthProvider>
   );
 }
 
