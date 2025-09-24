@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { createUserWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { auth, googleProvider } from "../firebase/firebaseConfig";
@@ -8,30 +7,59 @@ import Navbar from "../components/Navbar";
 import { Link, useNavigate } from "react-router-dom";
 import { FiUserPlus } from "react-icons/fi";
 import { FcGoogle } from "react-icons/fc";
+import axios from "axios"; // <- Make sure axios is imported
 
 export default function Register() {
-  //   const [name, setName] = useState("");
+  const [name, setName] = useState(""); // Added for user name
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
+  // ---------------- Email/Password Registration ----------------
   const handleEmailRegister = async (e) => {
     e.preventDefault();
-    // console.log("Email:", email);     
-    // console.log("Password:", password); 
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      navigate("/");
+      const res = await createUserWithEmailAndPassword(auth, email, password);
+      const currentUser = res.user;
+      console.log(currentUser);
+
+      // Prepare user data
+      const userData = {
+        uid: currentUser.uid,
+        email: currentUser.email,
+        name: name || currentUser.displayName || "",
+        photoURL: currentUser.photoURL || "",
+        createdAt: currentUser.metadata.creationTime || new Date().toISOString(),
+      };
+
+      // Send to backend
+      await axios.post("https://news-portal-server-seven-bice.vercel.app/users", userData);
+
+      navigate("/"); // Redirect after success
     } catch (err) {
       setError(err.message);
     }
   };
 
+  // ---------------- Google Registration ----------------
   const handleGoogleRegister = async () => {
     try {
-      await signInWithPopup(auth, googleProvider);
-      navigate("/");
+      const res = await signInWithPopup(auth, googleProvider);
+      const currentUser = res.user;
+
+      const userData = {
+        uid: currentUser.uid,
+        email: currentUser.email,
+        name: currentUser.displayName || "",
+        photoURL: currentUser.photoURL || "",
+        createdAt: currentUser.metadata.creationTime || new Date().toISOString(),
+      };
+
+      // Send to backend
+      await axios.post("https://news-portal-server-seven-bice.vercel.app/users", userData);
+
+      navigate("/"); // Redirect after success
     } catch (err) {
       setError(err.message);
     }
@@ -52,13 +80,15 @@ export default function Register() {
           </p>
         )}
         <form onSubmit={handleEmailRegister} className="space-y-4">
-          {/* <input
-          type="names"
-          placeholder="Enter your name."
-          className="w-full px-4 py-2 bg-black border border-green-400 rounded focus:outline-none focus:ring-2 focus:ring-green-400 text-green-300"
-          value={names}
-          onChange={(e) => setName(e.target.value)}
-        /> */}
+          {/* Name Input */}
+          <input
+            type="text"
+            placeholder="Enter your name."
+            className="w-full px-4 py-2 bg-black border border-green-400 rounded focus:outline-none focus:ring-2 focus:ring-green-400 text-green-300"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          {/* Email Input */}
           <input
             type="email"
             placeholder="Enter your Email."
@@ -66,6 +96,7 @@ export default function Register() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
+          {/* Password Input */}
           <input
             type="password"
             placeholder="Enter your Password"
@@ -73,6 +104,7 @@ export default function Register() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
+          {/* Register Button */}
           <button
             type="submit"
             className="w-full flex items-center justify-center gap-2 py-2 bg-green-400 text-black font-bold rounded hover:bg-green-300 transition"
@@ -88,7 +120,7 @@ export default function Register() {
           <hr className="flex-grow border-green-700" />
         </div>
 
-        {/* Google Register */}
+        {/* Google Register Button */}
         <button
           onClick={handleGoogleRegister}
           className="w-full flex items-center justify-center gap-3 py-3 bg-white text-black font-bold rounded hover:bg-gray-200 transition"

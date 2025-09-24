@@ -12,9 +12,9 @@ import axios from "axios";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);       // Firebase user
-  const [token, setToken] = useState(null);     // JWT from backend
-  const [loading, setLoading] = useState(true); // Loading state
+  const [user, setUser] = useState(null);      
+  const [token, setToken] = useState(null);   
+  const [loading, setLoading] = useState(true);
 
   // Listen for Firebase auth state changes
   useEffect(() => {
