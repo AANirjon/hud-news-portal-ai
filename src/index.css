@@ -58,3 +58,26 @@
   border: 1px solid rgba(255,255,255,0.04);
   backdrop-filter: blur(6px);
 }
+
+/* navbar hover effect */
+
+.underline-from-center {
+  position: relative;
+  display: inline-block;
+}
+
+.underline-from-center::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background-color: currentColor;
+  transition: width 0.3s ease, left 0.3s ease;
+}
+
+.underline-from-center:hover::after {
+  width: 100%;
+  left: 0;
+}
