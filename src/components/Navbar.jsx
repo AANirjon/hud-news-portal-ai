@@ -27,7 +27,7 @@ function Navbar() {
   };
 
   const linkClass = ({ isActive }) =>
-    `underline-from-center hover:text-green-100 transition-colors duration-300 ${isActive ? "text-green-400" : "text-white"
+    `underline-from-center hover:text-green-200 transition-colors duration-300 ${isActive ? "text-[var(--hud-primary)]" : "text-white"
     }`;
 
   return (
